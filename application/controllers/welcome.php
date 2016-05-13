@@ -18,14 +18,15 @@ class Welcome extends CI_Controller {
 
 	public function allstores() {	
 	
-		$sql = "SELECT * FROM CAP_STORE";
+		$sql = "SELECT * FROM CAP_STORE;";
+
 		$result = $this->execute($sql);
-		$r = $result->result_array;
+		$r = $result->result_array();
 		
 		$data = array();
 		$data['context'] = 'data';
 		$data['result'] = $r;
-	
+
 		$this->load->view('json',$data);
 	}
 	

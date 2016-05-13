@@ -51,20 +51,21 @@ $active_group = '';
 $active_record = TRUE;
 $active_group = 'cap';
 
-
-$serverName = "tcp:ar-mk-db-test1.database.windows.net,1433";
+$host = 'ar-mk-db-test1.database.windows.net\ar-mk-cust-app';
+$serverName = 'tcp:'.$host.',1433';
 $database = "ar-mk-cust-app";
 $username = 'lmilmanda';
 $password = 'Makro2016';
 
+/*
+
+$db['cap']['hostname'] = $host;
 $db['cap']['username'] = $username;
 $db['cap']['password'] = $password;
-$db['cap']['hostname'] = 'Driver={SQL Server};'.$serverName.'tcp:xxxxx.database.windows.net,1433;Database='.$database;
-$db['cap']['port']     = 1433;
 $db['cap']['database'] = $database;
-$db['cap']['dbdriver'] = 'odbc';
+$db['cap']['dbdriver'] = 'sqlsrv';
 $db['cap']['dbprefix'] = '';
-$db['cap']['pconnect'] = FALSE;
+$db['cap']['pconnect'] = TRUE;
 $db['cap']['db_debug'] = TRUE;
 $db['cap']['cache_on'] = FALSE;
 $db['cap']['cachedir'] = '';
@@ -73,9 +74,27 @@ $db['cap']['dbcollat'] = 'utf8_general_ci';
 $db['cap']['swap_pre'] = '';
 $db['cap']['autoinit'] = TRUE;
 $db['cap']['stricton'] = FALSE;
-$db['cap']['active_r'] = TRUE;
+
+*/
+
+$db['cap']['username'] = $username;
+$db['cap']['password'] = $password;
+$db['cap']['hostname'] = 'Driver={SQL Server Native Client 11.0};Server=tcp:ar-mk-db-test1.database.windows.net,1433;Database=ar-mk-cust-app;Uid=lmilmanda@ar-mk-db-test1;Pwd=Makro2016;Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;';
+$db['cap']['port']     = 1433;
+$db['cap']['database'] = $database;
+$db['cap']['dbdriver'] = 'odbc';
+$db['cap']['dbprefix'] = '';
 $db['cap']['pconnect'] = TRUE;
 $db['cap']['db_debug'] = TRUE;
+
+$db['cap']['char_set'] = 'utf8';
+$db['cap']['dbcollat'] = 'utf8_general_ci';
+
+$db['cap']['swap_pre'] = '';
+
+$db['cap']['autoinit'] = TRUE;
+$db['cap']['stricton'] = FALSE;
+
 $db['cap']['cache_on'] = FALSE;
 $db['cap']['cachedir'] = dirname(realpath($_SERVER['SCRIPT_FILENAME'])) .  DIRECTORY_SEPARATOR .'cache';
 
