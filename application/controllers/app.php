@@ -7,7 +7,7 @@ class App extends CI_Controller {
     }
 	
 	public function index() {
-		$this->sign_in('55556','javier@gmail.com','1','1');
+		$this->sign_in('666','javier@gmail.com','15','16');
 	}
 	
 	/**
@@ -28,6 +28,10 @@ class App extends CI_Controller {
 	 */
 	public function sign_in($passport='',$email='',$phone='',$device_id='') {	
 	
+	$body = json_decode(file_get_contents("php://input"));
+	
+	
+	
 		$sql = "EXEC [dbo].[sp_sign_in] '".$passport."','".$email."','".$phone."','".$device_id."';";
 		$result = $this->execute($sql);
 		
@@ -36,9 +40,9 @@ class App extends CI_Controller {
 		$data['context'] = 'data';
 	
 		if($result->num_rows > 0)
-			$data['result'] = $sql;
+			$data['result'] = $body;
 		else
-			$data['result'] = $sql;
+			$data['result'] = $body;
 	
 		$this->load->view('json',$data);
 	}
