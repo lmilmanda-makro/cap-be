@@ -7,7 +7,7 @@ class App extends CI_Controller {
     }
 	
 	public function index() {
-		$this->sign_in('666','javier@gmail.com','15','16');
+		//$this->sign_in('666','javier@gmail.com','15','16');
 	}
 	
 	/**
@@ -27,27 +27,29 @@ class App extends CI_Controller {
 	 *@return BOOLEAN;
 	 */
 	public function sign_in($passport='',$email='',$phone='',$device_id='') {	
-	
+
 	$body = json_decode(file_get_contents("php://input"));
 	
-	
-	
-		$sql = "EXEC [dbo].[sp_sign_in] '".$passport."','".$email."','".$phone."','".$device_id."';";
-		$result = $this->execute($sql);
+		try {      
+			$sql = "EXEC [dbo].[sp_sign_in] '".$body->passport."','".$body->email."','".$body->phone."','".$body->device_id."';";	
+			$result = $this->execute($sql);
+						
+		} catch (Exception $e) {
+			printf($e);
+		}
 		
-
 		$data = array();
 		$data['context'] = 'data';
 	
 		if($result->num_rows > 0)
-			$data['result'] = $body;
+			$data['result'] = TRUE ;
 		else
-			$data['result'] = $body;
+		$data['result'] = FALSE;
 	
 		$this->load->view('json',$data);
 	}
 	
-	/**
+	 /**
 	 *@param 	$passport		Pasaporte
 	 *@param 	$email			Email
 	 *@param 	$phone		    Telefono
