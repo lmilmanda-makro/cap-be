@@ -7,7 +7,7 @@ class App extends CI_Controller {
     }
 	
 	public function index() {
-	//	$this->sign_in('01020','javier@gmail.com','444474','ESDE-01');
+		$this->sign_in('55556','javier@gmail.com','1','1');
 	}
 	
 	/**
@@ -24,8 +24,7 @@ class App extends CI_Controller {
 	 *@param 	$email			Email
 	 *@param 	$phone		    Telefono
 	 *@param 	$device_id		ID de dispositivo
-
-	 * @return BOOLEAN;
+	 *@return BOOLEAN;
 	 */
 	public function sign_in($passport='',$email='',$phone='',$device_id='') {	
 	
@@ -37,13 +36,20 @@ class App extends CI_Controller {
 		$data['context'] = 'data';
 	
 		if($result->num_rows > 0)
-			$data['result'] = TRUE;
+			$data['result'] = $sql;
 		else
-			$data['result'] = FALSE;
+			$data['result'] = $sql;
 	
 		$this->load->view('json',$data);
 	}
 	
+	/**
+	 *@param 	$passport		Pasaporte
+	 *@param 	$email			Email
+	 *@param 	$phone		    Telefono
+	 *@param 	$device_id		ID de dispositivo
+	 *@return BOOLEAN;
+	 */
 	public function sign_up($passport='',$email='',$phone='',$device_id='') {	
 		
 		$data = array();
@@ -53,14 +59,14 @@ class App extends CI_Controller {
 		$this->load->view('json',$data);
 	}
 	
-	public function confirm_code($passport='',$device_id='',$code='') {	
-		$data = array();
-		$data['context'] = 'data';
-		$data['result'] = FALSE;
 	
-		$this->load->view('json',$data);
-	}
-	public function send_code($passport='',$device_id='',$code='') {	
+	/**
+	 *@param 	$passport		Pasaporte
+	 *@param 	$device_id		ID de dispositivo
+	 *@param 	$code		 	Codigo de activacion
+	 *@return BOOLEAN;
+	 */
+	public function confirm_code($passport='',$device_id='',$code='') {	
 		$data = array();
 		$data['context'] = 'data';
 		$data['result'] = FALSE;
@@ -69,7 +75,28 @@ class App extends CI_Controller {
 	}
 	
 	/**
-	 *
+	 *@param 	$passport		Pasaporte
+	 *@param 	$device_id		ID de dispositivo
+	 *@param 	$code		 	Codigo de activacion
+	 *@return BOOLEAN;
+	 */
+	public function send_code($passport='',$device_id='',$code='') {	
+	
+	$sql = "EXEC [dbo].[sp_send_code] '".$passport."','".$device_id."','".$code."';";
+		$result = $this->execute($sql);
+		
+		$data = array();
+		$data['context'] = 'data';
+	
+		if($result->num_rows > 0)
+			$data['result'] = TRUE;
+		else
+			$data['result'] = FALSE;
+	
+		$this->load->view('json',$data);;
+	}
+	
+	/**
 	 * @return TRUE;
 	 */
 	public function is_supported()
