@@ -33,20 +33,20 @@ class App extends CI_Controller {
 		try {      
 			$sql = "EXEC [dbo].[sp_sign_in] '".$body->passport."','".$body->email."','".$body->phone."','".$body->device_id."';";	
 			$result = $this->execute($sql);
-						
-		} catch (Exception $e) {
-			printf($e);
-		}
+			$data = array();
+			$data['context'] = 'data';
+	
+			if($result->num_rows > 0)
+				$data['result'] = TRUE ;
+			else
+				$data['result'] = FALSE;	
+			
+			$this->load->view('json',$data);
 		
-		$data = array();
-		$data['context'] = 'data';
-	
-		if($result->num_rows > 0)
-			$data['result'] = TRUE ;
-		else
-		$data['result'] = FALSE;
-	
-		$this->load->view('json',$data);
+		} catch (Exception $e) {
+			$data['result'] = FALSE;
+			$this->load->view('json',$data);
+		}
 	}
 	
 	 /**
@@ -73,11 +73,21 @@ class App extends CI_Controller {
 	 *@return BOOLEAN;
 	 */
 	public function confirm_code($passport='',$device_id='',$code='') {	
+		
+		$body = json_decode(file_get_contents("php://input"));
+
+		$sql = "SELECT CC.SIGN_IN ,ISNULL(MAX(CC.CONFIRMATION),0) AS 'Maxim' "
+		$sql .=  "FROM CAP_CONFIRMATION CC INNER JOIN CAP_USER CU ON CC.SIGN_IN =CC.SIGN_IN "
+		$sql .=  "WHERE  CU.PASSPORT = ".$passport." AND CU.DEVICE_ID = ".$device_id." GROUP BY CC.SIGN_IN; ";
+
+		$result = $this->execute($sql);
+		$r = $result->result_array();
+		
 		$data = array();
 		$data['context'] = 'data';
-		$data['result'] = FALSE;
-	
-		$this->load->view('json',$data);
+		$data['result'] = $r;
+
+		$this->load->view('json',$data););
 	}
 	
 	/**
@@ -88,18 +98,25 @@ class App extends CI_Controller {
 	 */
 	public function send_code($passport='',$device_id='',$code='') {	
 	
-	$sql = "EXEC [dbo].[sp_send_code] '".$passport."','".$device_id."','".$code."';";
-		$result = $this->execute($sql);
+	$body = json_decode(file_get_contents("php://input"));
+	
+		try {      
+			$sql = "EXEC [dbo].[sp_send_code] '".$body->passport."','".$body->device_id."','".$body->code."';";	
+			$result = $this->execute($sql);
+			$data = array();
+			$data['context'] = 'data';
+	
+			if($result->num_rows > 0)
+				$data['result'] = TRUE ;
+			else
+				$data['result'] = FALSE;	
+			
+			$this->load->view('json',$data);
 		
-		$data = array();
-		$data['context'] = 'data';
-	
-		if($result->num_rows > 0)
-			$data['result'] = TRUE;
-		else
+		} catch (Exception $e) {
 			$data['result'] = FALSE;
-	
-		$this->load->view('json',$data);;
+			$this->load->view('json',$data);
+		}
 	}
 	
 	/**
