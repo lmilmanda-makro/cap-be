@@ -4,9 +4,28 @@ class App extends CI_Controller {
 	
     function __construct() {
         parent::__construct();
-    }
+
+		// load library
+        $this->load->library('nexmo');
+        
+		// set response format: xml or json, default json
+        $this->nexmo->set_format('json');
+		
+  }
 	
 	public function index() {
+		
+		$from = '40756693916';
+        $to = '40756693916';
+  
+		  $message = array(
+            'text' => 'Aproveche las ofertas',
+        );
+        $response = $this->nexmo->send_message($from, $to, $message);
+        echo "<h1>Text Message</h1>";
+        $this->nexmo->d_print($response);
+        echo "<h3>Response Code: ".$this->nexmo->get_http_status()."</h3>";
+
 	}
 	
 	/**
