@@ -5,15 +5,16 @@ class App extends CI_Controller {
     function __construct() {
         parent::__construct();
 
-		// load library
+		// Carga libreria 
         $this->load->library('nexmo');
         
-		// set response format: xml or json, default json
+		// Setea el formato: xml or json, default json
         $this->nexmo->set_format('json');
 		
 		$this->_ci = & get_instance();
         $this->_ci->load->config('nexmo');
-		
+
+		// Instancio la constantes.		
         $this->brand = $this->_ci->config->item("api_brand");
 		$this->sender_id = $this->_ci->config->item("api_sender_id");
 		$this->code_length = $this->_ci->config->item("api_code_length");
@@ -98,16 +99,46 @@ class App extends CI_Controller {
 	}
 
 	/**
-	 *@return INTEGER;
-	 */
+	 *@param 	$phone		    Telefono
+	*@return INTEGER;
+	*/
 	public function create_token($phone= '') {	
-		$response = $this->nexmo->verify_request($phone, $this->brand, $this->sender_id, $this->code_length, $this->lg,null);
+		try {  
+
+			$response = $this->nexmo->verify_request($phone, $this->brand, $this->sender_id, $this->code_length, $this->lg,null);
 		
+			if($response['request_id'] ==0)
+				$this->request_id= $response['request_id'];
 
-		if($response['request_id'] ==0)
-			$this->request_id= $response['request_id'];
-
-		return $response['status'];
+			return $response['status'];
+		} catch (Exception $e) {
+			log_message('error', 'Error create_token'.$e.message);
+			return 97;
+		}
+	}
+	
+	/**
+	 *@param 	$passport		Pasaporte
+	 *@param 	$device_id	    Nro de Dispositivo
+	 *@param 	$code			Codigo token
+	 *@return INTEGER;
+	*/
+	public function validate_token($passport='',$device_id='',$code='') {				
+		try {  
+		
+			$sql = "EXEC [dbo].[sp_user_token] '".$passport."','".$device_id."'";	
+				
+			$query = $this->execute($sql);
+			$row = $query->row();
+			
+			$response = $this->nexmo->verify_check($row->DATA,$code);
+	
+		return $response['status'];		
+		
+		} catch (Exception $e) {
+			log_message('error', 'Error validate_token'.$e.message);
+			return 96;
+		}	
 	}
 }
  
