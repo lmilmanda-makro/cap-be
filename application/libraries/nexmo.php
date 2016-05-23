@@ -603,7 +603,6 @@ class nexmo
 	
 	$result=curl_exec($ch);
 
-
 	$this->_http_response =$result;
 	$this->_http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 	
