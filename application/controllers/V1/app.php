@@ -83,7 +83,7 @@ class App extends CI_Controller {
 	 */
 	public function sign_in($code='',$passport='',$email='',$phone='',$device_id='') {		
 		try {      
-			VAR_DUMP($this->request_id);
+		
 			$sql = "EXEC [dbo].[sp_sign_in] '".$passport."','".$email."','".$phone."','".$device_id."','".$this->request_id."';";	
 			
 			$query = $this->execute($sql);
