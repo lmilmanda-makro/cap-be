@@ -445,8 +445,10 @@ class nexmo
             'lg'           => $lg,
             'require_type' => $require_type,
         );
-
-        return $this->request('get', $this->verify_url($params), null, $options);
+   
+  
+    		
+      return $this->request('get', $this->verify_url($params), null, $options);
     }
 
     /**
@@ -545,10 +547,12 @@ class nexmo
      */
     protected function request($method, $url, $params = array(), $options = array())
     {
+	
         if ($method === 'get') {
             $uri = $url . ($params ? '?' . http_build_query($params) : '');
             $this->create($uri);
             $this->_request_url = $uri;
+
         } else {
             $data = $params ? http_build_query($params) : '';
             $this->create($url);
@@ -586,14 +590,26 @@ class nexmo
 
     protected function execute()
     {
-        // Execute the request & and hide all output
-        $this->_http_response = curl_exec($this->session);
-        $this->_http_status = curl_getinfo($this->session, CURLINFO_HTTP_CODE);
-        $this->_request_headers = curl_getinfo($this->session, CURLINFO_HEADER_OUT);
 
-        curl_close($this->session);
+//$result = file_get_contents($url);
+// Will dump a beauty json :3
+//var_dump(json_decode($result, true));
 
-        return $this->response();
+	$ch = curl_init();
+	
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_URL,$this->url);
+	
+	$result=curl_exec($ch);
+
+
+	$this->_http_response =$result;
+	$this->_http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	
+	curl_close($ch);
+
+    return $this->response();
     }
 
     /**
@@ -681,6 +697,12 @@ class nexmo
         echo '</pre>';
     }
 
+public function request_id($msg)
+    {
+        echo '<pre>';
+        print_r($msg);
+        echo '</pre>';
+    }
     /**
      *
      * output debug message via using dump
