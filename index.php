@@ -18,10 +18,7 @@
  *
  */
 
-//if(	$_SERVER['HTTP_HOST'] == '10.49.2.34' ||
-//	$_SERVER['HTTP_HOST'] == '10.49.2.26' ||
-//	$_SERVER['HTTP_HOST'] == 'aereos.makro.com.ar' )
-//{
+
 //	define('ENVIRONMENT', 'production');
 //} else {
 	define('ENVIRONMENT', 'development');
@@ -82,7 +79,7 @@ if (defined('ENVIRONMENT'))
  */
 	$application_folder = 'application';
 	
-	define('CONTEXTPATH','/cap-st');
+	define('CONTEXTPATH','/cap-be');
 /*
  * --------------------------------------------------------------------
  * DEFAULT CONTROLLER
