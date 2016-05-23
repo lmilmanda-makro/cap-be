@@ -56,7 +56,7 @@ class App extends CI_Controller {
 			{
 				$return = $this->create_token($body->phone);
 				if($return==0)
-					$return = $this->sign_in("1", $body->passport,$body->email,$body->phone,$body->device_id);				
+					$return = $this->sign_in("NEWID()", $body->passport,$body->email,$body->phone,$body->device_id);				
 			}
 			else
 				$return = $row->DATA;
@@ -83,8 +83,8 @@ class App extends CI_Controller {
 	 */
 	public function sign_in($code='',$passport='',$email='',$phone='',$device_id='') {		
 		try {      
-			
-			$sql = "EXEC [dbo].[sp_sign_in] '".$passport."','".$email."','".$phone."','".$device_id."';";	
+			VAR_DUMP($this->request_id);
+			$sql = "EXEC [dbo].[sp_sign_in] '".$passport."','".$email."','".$phone."','".$device_id."','".$this->request_id."';";	
 			
 			$query = $this->execute($sql);
 			$row = $query->row();
@@ -103,7 +103,8 @@ class App extends CI_Controller {
 	public function create_token($phone= '') {	
 		$response = $this->nexmo->verify_request($phone, $this->brand, $this->sender_id, $this->code_length, $this->lg,null);
 		
-		if($response['request_id'] =0)
+
+		if($response['request_id'] ==0)
 			$this->request_id= $response['request_id'];
 
 		return $response['status'];
