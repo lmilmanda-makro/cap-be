@@ -11,21 +11,18 @@ class App extends CI_Controller {
 		// set response format: xml or json, default json
         $this->nexmo->set_format('json');
 		
+		$this->_ci = & get_instance();
+        $this->_ci->load->config('nexmo');
+		
+        $this->brand = $this->_ci->config->item("api_brand");
+		$this->sender_id = $this->_ci->config->item("api_sender_id");
+		$this->code_length = $this->_ci->config->item("api_code_length");
+		$this->lg = $this->_ci->config->item("api_lg");
+		$this->request_id = $this->_ci->config->item("api_request_id");	
   }
 	
 	public function index() {
 		
-		$from = '40756693916';
-        $to = '40756693916';
-  
-		  $message = array(
-            'text' => 'Aproveche las ofertas',
-        );
-        $response = $this->nexmo->send_message($from, $to, $message);
-        echo "<h1>Text Message</h1>";
-        $this->nexmo->d_print($response);
-        echo "<h3>Response Code: ".$this->nexmo->get_http_status()."</h3>";
-
 	}
 	
 	/**
@@ -51,19 +48,18 @@ class App extends CI_Controller {
 		try {      
 			
 			$sql = "EXEC [dbo].[sp_user_exist] '".$body->passport."','".$body->email."','".$body->phone."','".$body->device_id."'";	
+			
 			$query = $this->execute($sql);
 			$row = $query->row();
 
 			if($row->DATA == 0 )
 			{
-				$return = $this->create_token();
+				$return = $this->create_token($body->phone);
 				if($return==0)
 					$return = $this->sign_in("1", $body->passport,$body->email,$body->phone,$body->device_id);				
 			}
 			else
 				$return = $row->DATA;
-			
-			///SEND SMS
 			
 			$data = array();
 			$data['context'] = 'data';
@@ -104,8 +100,13 @@ class App extends CI_Controller {
 	/**
 	 *@return INTEGER;
 	 */
-	public function create_token() {	
-		return 0;
+	public function create_token($phone= '') {	
+		$response = $this->nexmo->verify_request($phone, $this->brand, $this->sender_id, $this->code_length, $this->lg,null);
+		
+		if($response['request_id'] =0)
+			$this->request_id= $response['request_id'];
+
+		return $response['status'];
 	}
 }
  
