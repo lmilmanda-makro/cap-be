@@ -44,7 +44,7 @@ class App extends CI_Controller {
 	 */
 	public function sign_up() {	
 
-	$body = json_decode(file_get_contents("php://input"));
+		$body = json_decode(file_get_contents("php://input"));
 	
 		try {      
 			
@@ -123,15 +123,17 @@ class App extends CI_Controller {
 	 *@param 	$code			Codigo token
 	 *@return INTEGER;
 	*/
-	public function validate_token($passport='',$device_id='',$code='') {				
-		try {  
+	public function validate_token($passport='',$device_id='',$code='') {	
+	
+		$body = json_decode(file_get_contents("php://input"));
 		
-			$sql = "EXEC [dbo].[sp_user_token] '".$passport."','".$device_id."'";	
+		try {
+			$sql = "EXEC [dbo].[sp_user_token] '".$body->passport."','".$body->device_id."'";	
 				
 			$query = $this->execute($sql);
 			$row = $query->row();
 			
-			$response = $this->nexmo->verify_check($row->DATA,$code);
+			$response = $this->nexmo->verify_check($row->DATA,$body->code);
 	
 		return $response['status'];		
 		
