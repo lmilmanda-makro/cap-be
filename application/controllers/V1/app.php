@@ -48,6 +48,7 @@ class App extends CI_Controller {
 	
 		try {      
 			
+			echo '01';
 			$sql = "EXEC [dbo].[sp_user_exist] '".$body->passport."','".$body->email."','".$body->phone."','".$body->device_id."'";	
 			
 			$query = $this->execute($sql);
@@ -55,13 +56,15 @@ class App extends CI_Controller {
 
 			if($row->DATA == 0 )
 			{
-				$return = $this->create_token($body->phone);
+			echo '02';
+			$return = $this->create_token($body->phone);
 				if($return==0)
 					$return = $this->sign_in("NEWID()", $body->passport,$body->email,$body->phone,$body->device_id);				
 			}
 			else
 				$return = $row->DATA;
 			
+			echo $return;
 			$data = array();
 			$data['context'] = 'data';
 			$data['result'] = $return;
