@@ -48,7 +48,6 @@ class App extends CI_Controller {
 	
 		try {      
 			
-			echo '01';
 			$sql = "EXEC [dbo].[sp_user_exist] '".$body->passport."','".$body->email."','".$body->phone."','".$body->device_id."'";	
 			
 			$query = $this->execute($sql);
@@ -56,7 +55,6 @@ class App extends CI_Controller {
 
 			if($row->DATA == 0 )
 			{
-			echo '02';
 			$return = $this->create_token($body->phone);
 				if($return==0)
 					$return = $this->sign_in("NEWID()", $body->passport,$body->email,$body->phone,$body->device_id);				
@@ -64,7 +62,6 @@ class App extends CI_Controller {
 			else
 				$return = $row->DATA;
 			
-			echo $return;
 			$data = array();
 			$data['context'] = 'data';
 			$data['result'] = $return;
@@ -110,6 +107,7 @@ class App extends CI_Controller {
 
 			$response = $this->nexmo->verify_request($phone, $this->brand, $this->sender_id, $this->code_length, $this->lg,null);
 		
+		var_dump($response);
 			if($response['request_id'] ==0)
 				$this->request_id= $response['request_id'];
 
