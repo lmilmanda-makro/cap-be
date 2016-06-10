@@ -1,6 +1,15 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class App extends CI_Controller {
+require_once 'base_controller.php';
+
+class App extends Base_Controller {
+	
+	// curl init session
+    protected $app_session;
+    protected $options = array();
+    protected $url;
+	
+	public static $verify_base_url = 'http://localhost/cap-be-ho/index.php/V1/App/Passport';
 	
     function __construct() {
         parent::__construct();
@@ -25,16 +34,7 @@ class App extends CI_Controller {
 	public function index() {
 		
 	}
-	
-	/**
-	 * @param 	$sql		Query de sql
-	 * @return EXECUTE;
-	 */
-	public function execute($sql){
-		$query = $this->db->query($sql);
-		return $query;
-	}	
-	
+		
 	/**
 	 *@param 	$passport		Pasaporte
 	 *@param 	$email			Email
@@ -44,34 +44,35 @@ class App extends CI_Controller {
 	 */
 	public function sign_up() {	
 
+		$data = array();
+		$data['context'] = 'data';
+		$data['result'] = null;
+			
 		$body = json_decode(file_get_contents("php://input"));
 	
 		try {      
 			
-		//	$sql = "EXEC [dbo].[sp_user_exist] '".$body->passport."','".$body->email."','".$body->phone."','".$body->device_id."'";	
-			
-		//	$query = $this->execute($sql);
-		//	$row = $query->row();
-
-		//	if($row->DATA == 0 )
-		//	{
-			$return = $this->create_token($body->phone);
-				if($return==0)
-					$return = $this->sign_in("NEWID()", $body->passport,$body->email,$body->phone,$body->device_id);				
-	//		}
-		//	else
-		//		$return = $row->DATA;
-			
-			$data = array();
-			$data['context'] = 'data';
-			$data['result'] = $return;
-			
-			$this->load->view('json',$data);
+			 $params = array(
+				'passport'       => $body->passport, //'0147067214'
+			);
 		
+			$return = $this->request('get', $this->verify_url($params), null);
+				
+			if(isset($return))
+			{
+				$return_token = $this->create_token($body->phone);
+				//if($return_token == 0)
+				//	$this->sign_in("NEWID()", $body->passport,$body->email,$body->phone,$body->device_id);				
+			}
+					
+			$data['result'] = $return->result;
+			
+			$this->load->view('json',$data);	
+			
 		} catch (Exception $e) {
 			log_message('error', 'Error sign_up'.$e.message);
-			$this->load->view('json',$data);
-		}
+			$this->load->view('json',$e);
+		}		
 	}
 	
 	/**
@@ -87,7 +88,7 @@ class App extends CI_Controller {
 		
 			$sql = "EXEC [dbo].[sp_sign_in] '".$passport."','".$email."','".$phone."','".$device_id."','".$this->request_id."';";	
 			
-			$query = $this->execute($sql);
+			$query = $this->execute_query($sql);
 			$row = $query->row();
 			
 			return $row;
@@ -107,7 +108,6 @@ class App extends CI_Controller {
 
 			$response = $this->nexmo->verify_request($phone, $this->brand, $this->sender_id, $this->code_length, $this->lg,null);
 		
-		var_dump($response);
 			if($response['request_id'] ==0)
 				$this->request_id= $response['request_id'];
 
@@ -131,7 +131,7 @@ class App extends CI_Controller {
 		try {
 			$sql = "EXEC [dbo].[sp_user_token] '".$body->passport."','".$body->device_id."'";	
 				
-			$query = $this->execute($sql);
+			$query = $this->execute_query($sql);
 			$row = $query->row();
 			
 			$response = $this->nexmo->verify_check($row->DATA,$body->code);
@@ -143,5 +143,16 @@ class App extends CI_Controller {
 			return 96;
 		}	
 	}
+	
+	 /**
+     *
+     * output verify base url
+     *
+     * @param string
+     */
+    public function verify_url($params, $type = "request")
+    {
+        return self::$verify_base_url ."/" . $params["passport"];
+    }
 }
  
