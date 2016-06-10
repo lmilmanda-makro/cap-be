@@ -590,13 +590,9 @@ class nexmo
 
     protected function execute()
     {
-
-//$result = file_get_contents($url);
-// Will dump a beauty json :3
-//var_dump(json_decode($result, true));
-
 	$ch = curl_init();
 	
+	//echo $this->url;
 	
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -663,7 +659,6 @@ class nexmo
                 $response_obj = json_decode($this->_http_response , $is_assoc );
             }
         }
-	echo $response_obj;
 
         return $response_obj;
     }
